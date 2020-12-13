@@ -1054,6 +1054,12 @@ func (r *Rebalancer) waitAssignPIndexDone(stopCh, stopCh2 chan struct{},
 		return nil
 	}
 
+	log.Printf("\n Awaiting STARTS, pindex: %s, state:%s, op: %v, node:%s, formerPrimaryNode: %s", pindex, state, op, node, formerPrimaryNode)
+
+	defer func() {
+		log.Printf("\n Awaiting DONE, pindex: %s, state:%s, op: %v, node:%s, formerPrimaryNode: %s", pindex, state, op, node, formerPrimaryNode)
+	}()
+
 	r.m.Lock()
 	planPIndex, err := r.getPlanPIndexLOCKED(planPIndexes, pindex)
 	r.m.Unlock()
@@ -1116,6 +1122,7 @@ func (r *Rebalancer) waitAssignPIndexDone(stopCh, stopCh2 chan struct{},
 		}
 
 		if reached {
+			log.Printf("pindex: %s, sourcePartition:%s, uuidSeqWant: %v, node:%s", pindex, sourcePartition, uuidSeqWant, node)
 			//moving onto the next sp
 			continue
 		}
